@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "telnet-proxy": {
+      "transport": "stdio",
+      "command": "./telnet-mcp-server",
+      "args": [],
+      "env": {
+        "ROUTER_IPS": "10.98.1.131,10.98.1.171",
+        "LOG_LEVEL": "info",
+        "AUDIT_LOG_PATH": "/tmp/telnet-mcp-audit.log"
+      }
+    }
+  }
+}

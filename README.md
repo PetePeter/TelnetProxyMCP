@@ -95,29 +95,25 @@ Disconnect from router device.
 
 ### Command Filtering
 
-**Allowed Commands:**
-- `show version`
-- `show config`
-- `show running-config`
-- `show interfaces`
-- `show ip route`
-- `show arp`
-- `show users`
-- `show processes`
-- `show memory`
-- `show cpu`
-- `show log`
+The server uses a **blacklist security model** that allows most commands while blocking only dangerous operations:
+
+**Security Approach:**
+- ✅ **Default Allow**: All commands are permitted by default
+- ❌ **Minimal Blacklist**: Only dangerous commands are blocked
+- 🔍 **Full Audit**: All commands are logged regardless of status
+
+**Allowed Commands (Examples):**
+- File operations: `cat`, `head`, `tail`, `more`, `less`, `grep`, `find`
+- System info: `ls`, `ps`, `top`, `df`, `free`, `uptime`, `whoami`
+- Network tools: `ping`, `traceroute`, `nslookup`, `dig`, `netstat`
+- Router commands: `show version`, `show config`, `show interfaces`, etc.
+- Text processing: `awk`, `sed`, `sort`, `uniq`, `wc`, `cut`
 
 **Blocked Commands:**
-- `configure`
-- `write`
-- `erase`
-- `delete`
-- `reload`
-- `shutdown`
-- `no *`
-- `clear`
-- And other destructive operations
+- Configuration: `configure`, `config`, `write memory`, `wr`
+- Destructive: `delete`, `del`, `erase`, `format`, `factory-reset`
+- System control: `reload`, `reboot`, `restart`, `shutdown`, `halt`, `reset`
+- Firmware: `boot ` (with space), `upgrade`, `update`
 
 ### Audit Logging
 

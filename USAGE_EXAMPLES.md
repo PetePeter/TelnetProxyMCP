@@ -1,5 +1,7 @@
 # Usage Examples for Telnet MCP Server
 
+> **Note:** This server now uses a **blacklist security model** that allows most commands (including `cat`, `grep`, `find`, etc.) while blocking only dangerous operations. See README.md for full details.
+
 ## Basic Setup
 
 1. **Start the MCP server with Claude Code**:
@@ -77,7 +79,27 @@ Create a visual representation of the network structure.
 4. Cross-reference information
 5. Generate network topology diagram
 
-### 4. Configuration Comparison
+### 4. File System Analysis
+
+**Prompt to Claude Code:**
+```
+Analyze the file system on router 10.98.1.131. Use commands like:
+- cat /etc/config/wireless (to read wireless configuration)
+- find /etc -name "*.conf" (to locate configuration files)
+- grep -r "password" /etc (to find password references)
+- ls -la /var/log (to check log files)
+
+Identify important configuration files and their contents.
+```
+
+**Expected Flow:**
+1. Connect to router
+2. Explore file system with Unix commands
+3. Read configuration files with `cat`, `head`, `tail`
+4. Search for specific patterns with `grep`
+5. Analyze findings and provide recommendations
+
+### 5. Configuration Comparison
 
 **Prompt to Claude Code:**
 ```
@@ -92,12 +114,12 @@ Recommend standardization improvements.
 
 **Expected Flow:**
 1. Connect to both routers sequentially
-2. Extract comparable configuration data
+2. Extract comparable configuration data using `cat` and `show` commands
 3. Perform side-by-side analysis
 4. Identify discrepancies
 5. Recommend standardization steps
 
-### 5. Interface and Performance Analysis
+### 6. Interface and Performance Analysis
 
 **Prompt to Claude Code:**
 ```

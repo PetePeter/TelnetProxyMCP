@@ -82,7 +82,6 @@ type TelnetManager struct {
 
 // Security and Audit
 type SecurityFilter struct {
-	allowedCommands []string
 	blockedCommands []string
 	logger          *logrus.Logger
 }
@@ -125,41 +124,28 @@ func init() {
 
 	// Initialize security filter
 	securityFilter = &SecurityFilter{
-		allowedCommands: []string{
-			"show version",
-			"show config",
-			"show running-config",
-			"show interfaces",
-			"show ip route",
-			"show arp",
-			"show users",
-			"show processes",
-			"show memory",
-			"show cpu",
-			"show log",
-			"show status",
-			"show system",
-			"show vlan",
-			"dir",
-			"ls",
-			"help",
-			"?",
-		},
 		blockedCommands: []string{
 			"configure",
 			"config",
+			"write memory",
 			"write",
-			"copy",
-			"erase",
+			"wr",
+			"copy running-config startup-config",
 			"delete",
+			"del",
+			"erase",
+			"format",
+			"factory-reset",
+			"factory-default",
 			"reload",
 			"reboot",
+			"restart",
 			"shutdown",
-			"no ",
-			"clear",
+			"halt",
 			"reset",
-			"factory-reset",
-			"format",
+			"boot ",
+			"upgrade",
+			"update",
 		},
 		logger: logger,
 	}
@@ -169,24 +155,16 @@ func init() {
 func (sf *SecurityFilter) isCommandAllowed(command string) bool {
 	command = strings.ToLower(strings.TrimSpace(command))
 	
-	// Check blocked commands first
+	// Check blocked commands - deny if matches
 	for _, blocked := range sf.blockedCommands {
 		if strings.HasPrefix(command, blocked) {
-			sf.logger.Warnf("Blocked command attempted: %s", command)
+			sf.logger.Warnf("Blocked dangerous command attempted: %s", command)
 			return false
 		}
 	}
 
-	// Check if command matches allowed patterns
-	for _, allowed := range sf.allowedCommands {
-		if strings.HasPrefix(command, allowed) {
-			return true
-		}
-	}
-
-	// Default deny for unknown commands
-	sf.logger.Warnf("Unknown command denied: %s", command)
-	return false
+	// Default allow - only block dangerous commands
+	return true
 }
 
 // Audit Logger Implementation
@@ -276,7 +254,7 @@ func (tc *TelnetConnection) executeCommand(command string) (string, error) {
 			"host":    tc.host,
 			"command": command,
 		})
-		return "", fmt.Errorf("command not allowed: %s", command)
+		return "", fmt.Errorf("command blocked by security policy - dangerous command not allowed: %s", command)
 	}
 
 	auditLogger.logEvent("command_executed", map[string]interface{}{
